@@ -34,6 +34,27 @@ type TimedCommand struct {
 	TimeInSeconds int64
 }
 
+type StatusCommand struct {
+	Zone   string
+	Status string
+}
+
+func getStatus(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.PinWrapper, w http.ResponseWriter, r *http.Request) {
+	var statusCommand StatusCommand
+
+	zone := r.URL.Query().Get("zone")
+
+	if zone == "backyard" {
+		statusCommand.Status = backyardPin.ReadPin()
+	}
+	if zone == "frontyard" {
+		statusCommand.Status = frontyardPin.ReadPin()
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(statusCommand)
+}
+
 func turnOnWateringSystem(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.PinWrapper, w http.ResponseWriter, r *http.Request) {
 	var command Command
 	json.NewDecoder(r.Body).Decode(&command)
@@ -87,6 +108,9 @@ func main() {
 	})
 	server.router.Post("/timed", func(w http.ResponseWriter, r *http.Request) {
 		timedWateringSystem(backyardPin, frontyardPin, w, r)
+	})
+	server.router.Get("/status", func(w http.ResponseWriter, r *http.Request) {
+		getStatus(backyardPin, frontyardPin, w, r)
 	})
 	http.ListenAndServe(":3000", server.router)
 }
