@@ -1,30 +1,37 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 	"time"
-	"watering-system-go/wateringrpio"
+
+	"wateringrpio/pkg/pi"
 )
 
+// Command to turn on the water
+// Zone can either be frontyard or backyard
+// State can either be on or off
 type Command struct {
 	Zone  string
 	State string
 }
 
+// TimedCommand is the same as command but with a set amount of time
 type TimedCommand struct {
 	Zone          string
 	State         string
 	TimeInSeconds int64
 }
 
+//StatusCommand returns the watering status for the zone
 type StatusCommand struct {
 	Zone   string
 	Status string
 }
 
-func getStatus(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.PinWrapper, w http.ResponseWriter, r *http.Request) {
+// GetStatus gets the status for a given zone
+func GetStatus(backyardPin pi.PinWrapper, frontyardPin pi.PinWrapper, w http.ResponseWriter, r *http.Request) {
 	var statusCommand StatusCommand
 
 	zone := r.URL.Query().Get("zone")
@@ -40,7 +47,8 @@ func getStatus(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.Pi
 	json.NewEncoder(w).Encode(statusCommand)
 }
 
-func turnOnWateringSystem(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.PinWrapper, w http.ResponseWriter, r *http.Request) {
+// TurnOnWateringSystem turns the watering system on for a given zone
+func TurnOnWateringSystem(backyardPin pi.PinWrapper, frontyardPin pi.PinWrapper, w http.ResponseWriter, r *http.Request) {
 	var command Command
 	json.NewDecoder(r.Body).Decode(&command)
 	if command.Zone == "frontyard" && command.State == "on" {
@@ -59,7 +67,8 @@ func turnOnWateringSystem(backyardPin wateringrpio.PinWrapper, frontyardPin wate
 	log.Println(backyardPin.ReadPin())
 }
 
-func timedWateringSystem(backyardPin wateringrpio.PinWrapper, frontyardPin wateringrpio.PinWrapper, w http.ResponseWriter, r *http.Request) {
+// TimedWateringSystem is the handler to turn the watering system for a given amount of time
+func TimedWateringSystem(backyardPin pi.PinWrapper, frontyardPin pi.PinWrapper, w http.ResponseWriter, r *http.Request) {
 	var command TimedCommand
 	json.NewDecoder(r.Body).Decode(&command)
 	log.Printf("Turning on %s\n", command.Zone)
