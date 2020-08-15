@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/pkg/profile"
 )
 
 type server struct {
@@ -23,6 +24,7 @@ func initServer() server {
 }
 
 func main() {
+	defer profile.Start().Stop()
 	backyardPin, frontyardPin := pi.InitRPI()
 	server := initServer()
 	server.router.Post("/", func(w http.ResponseWriter, r *http.Request) {

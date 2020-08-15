@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -72,6 +73,8 @@ func TimedWateringSystem(backyardPin pi.PinWrapper, frontyardPin pi.PinWrapper, 
 	var command TimedCommand
 	json.NewDecoder(r.Body).Decode(&command)
 	log.Printf("Turning on %s\n", command.Zone)
+	fmt.Fprintf(w, "%s is turned on for: %ds", command.Zone, command.TimeInSeconds)
+
 	if command.Zone == "frontyard" && command.State == "on" {
 		go func() {
 			frontyardPin.TurnOn()
