@@ -73,6 +73,7 @@ func (ws *WateringSystem) TimedWateringSystem(w http.ResponseWriter, r *http.Req
 	}
 }
 
+//GetHistory returns the entire history of our watering system
 func (ws *WateringSystem) GetHistory(w http.ResponseWriter, r *http.Request) {
 	history, err := ws.historyRepo.All()
 	if err != nil {

@@ -2,6 +2,7 @@ package wateringsystem
 
 import (
 	"wateringsystem/pkg/pi"
+	"wateringsystem/pkg/wateringsystem/history"
 
 	"github.com/jackc/pgx"
 )
@@ -31,7 +32,7 @@ type statusResponse struct {
 type WateringSystem struct {
 	backyardPin  *pi.PinWrapper
 	frontyardPin *pi.PinWrapper
-	historyRepo  *HistoryService
+	historyRepo  history.HistoryRepository
 }
 
 //NewWateringSystem returns an instance of the watering sytem
@@ -39,6 +40,6 @@ func NewWateringSystem(backyardPin *pi.PinWrapper, frontyard *pi.PinWrapper, db 
 	return &WateringSystem{
 		backyardPin:  backyardPin,
 		frontyardPin: frontyard,
-		historyRepo:  NewHistoryService(db),
+		historyRepo:  history.NewRepository(db),
 	}
 }

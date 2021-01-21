@@ -8,17 +8,19 @@ import (
 	"github.com/jackc/pgx"
 )
 
-type HistoryService struct {
+//Service represents the repository model
+type Repository struct {
 	db *pgx.ConnPool
 }
 
+// NewRepository will instantiate a repository to interact with history
 func NewRepository(db *pgx.ConnPool) HistoryRepository {
-	return HistoryService{
+	return Repository{
 		db: db,
 	}
 }
 
-func (hr HistoryService) All() ([]HistoryModel, error) {
+func (hr Repository) All() ([]HistoryModel, error) {
 	rows, err := hr.db.Query(`select * from history`)
 	if err != nil {
 		log.Fatal(err)
@@ -45,7 +47,7 @@ func (hr HistoryService) All() ([]HistoryModel, error) {
 	return historyList, nil
 }
 
-func (hr HistoryService) Insert(startDate time.Time, endDate time.Time, area string) (*uuid.UUID, error) {
+func (hr Repository) Insert(startDate time.Time, endDate time.Time, area string) (*uuid.UUID, error) {
 	id, err := uuid.NewV4()
 
 	if err != nil {
