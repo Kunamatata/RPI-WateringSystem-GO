@@ -20,6 +20,7 @@ func NewRepository(db *pgx.ConnPool) HistoryRepository {
 	}
 }
 
+//All returns the entire watering history from the database
 func (hr Repository) All() ([]HistoryModel, error) {
 	rows, err := hr.db.Query(`select * from history`)
 	if err != nil {
@@ -41,12 +42,12 @@ func (hr Repository) All() ([]HistoryModel, error) {
 			Startdate: history.Startdate,
 			Enddate:   history.Enddate,
 			Area:      history.Area,
-			// TimeWateredInSeconds: time.Duration(history.Enddate.Sub(history.Startdate).Seconds())})
 		})
 	}
 	return historyList, nil
 }
 
+//Insert inserts a new row in the history table
 func (hr Repository) Insert(startDate time.Time, endDate time.Time, area string) (*uuid.UUID, error) {
 	id, err := uuid.NewV4()
 

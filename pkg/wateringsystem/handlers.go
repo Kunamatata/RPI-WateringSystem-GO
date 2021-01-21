@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"wateringsystem/pkg/wateringsystem/history"
 )
 
 // GetStatus gets the status for a given zone
@@ -75,11 +76,23 @@ func (ws *WateringSystem) TimedWateringSystem(w http.ResponseWriter, r *http.Req
 
 //GetHistory returns the entire history of our watering system
 func (ws *WateringSystem) GetHistory(w http.ResponseWriter, r *http.Request) {
-	history, err := ws.historyRepo.All()
+	wateringHistory, err := ws.historyRepo.All()
+	var histories []history.History
+
+	for _, h := range wateringHistory {
+		histories = append(histories, history.History{
+			ID:                   h.ID,
+			Startdate:            h.Startdate,
+			Enddate:              h.Enddate,
+			Area:                 h.Area,
+			TimeWateredInSeconds: time.Duration(h.Enddate.Sub(h.Startdate).Seconds()),
+		})
+	}
+
 	if err != nil {
 		http.Error(w, "No history", http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(history)
+	json.NewEncoder(w).Encode(histories)
 }
