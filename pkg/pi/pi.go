@@ -20,27 +20,29 @@ type PinWrapper struct {
 }
 
 //ReadPin reads the given pin and returns the value as a string
-func (pinWrapper PinWrapper) ReadPin() string {
+func (pinWrapper *PinWrapper) ReadPin() string {
 	return pinWrapper.pin.Read().String()
 }
 
 //TurnOn turns the pin on Low
-func (pinWrapper PinWrapper) TurnOn() {
+func (pinWrapper *PinWrapper) TurnOn() {
 	pinWrapper.pin.Out(gpio.Low)
 }
 
 //TurnOff turns the pin to High
-func (pinWrapper PinWrapper) TurnOff() {
+func (pinWrapper *PinWrapper) TurnOff() {
 	pinWrapper.pin.Out(gpio.High)
 }
 
 //InitRPI initiates the raspberry pi
-func InitRPI() (PinWrapper, PinWrapper) {
-	if _, err := host.Init(); err != nil {
+func InitRPI() (*PinWrapper, *PinWrapper) {
+	_, err := host.Init()
+	if err != nil {
 		log.Fatal(err)
 	}
+
 	backyardPin := PinWrapper{pin: gpioreg.ByName(BackyardPin)}
 	frontyardPin := PinWrapper{pin: gpioreg.ByName(FrontyardPin)}
 
-	return backyardPin, frontyardPin
+	return &backyardPin, &frontyardPin
 }

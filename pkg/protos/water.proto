@@ -1,0 +1,12 @@
+syntax = "proto3";
+package water;
+
+message WaterCommand {
+  string zone = 1;
+  string state = 2;
+  int32 seconds = 3;
+}
+
+service  WateringService {
+  rpc WaterForXSeconds(WaterCommand) returns (WaterCommand) {}
+}
