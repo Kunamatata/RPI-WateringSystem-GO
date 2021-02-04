@@ -32,6 +32,7 @@ func (ws *WateringSystem) GetStatus(w http.ResponseWriter, r *http.Request) {
 func (ws *WateringSystem) TurnOnWateringSystem(w http.ResponseWriter, r *http.Request) {
 	var command waterRequest
 	json.NewDecoder(r.Body).Decode(&command)
+
 	if command.Zone == "frontyard" && command.State == "on" {
 		ws.frontyardPin.TurnOn()
 	}
@@ -44,6 +45,7 @@ func (ws *WateringSystem) TurnOnWateringSystem(w http.ResponseWriter, r *http.Re
 	if command.Zone == "backyard" && command.State == "off" {
 		ws.backyardPin.TurnOff()
 	}
+
 	log.Println(ws.frontyardPin.ReadPin())
 	log.Println(ws.backyardPin.ReadPin())
 }
